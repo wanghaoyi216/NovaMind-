@@ -30,11 +30,11 @@ tj:
 #    file: ALI
     media: TENCENT
   ali:
-    accessId: YOUR_CLOUD_KEY_HERE
-    accessKey: YOUR_CLOUD_KEY_HERE
+    accessId: ${ALI_OSS_ACCESS_ID:YOUR_OSS_ACCESS_ID}
+    accessKey: ${ALI_OSS_ACCESS_KEY:YOUR_OSS_ACCESS_KEY}
     oss:
-      endpoint: "*******"
-      bucket: "*******"
+      endpoint: ${ALI_OSS_ENDPOINT:YOUR_OSS_ENDPOINT}
+      bucket: ${ALI_OSS_BUCKET:YOUR_OSS_BUCKET}
   minio:
     endpoint: http://localhost:9000
     public-endpoint: http://localhost:9000

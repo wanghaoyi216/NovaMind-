@@ -32,5 +32,5 @@ tj:
     database: novamind_message
   sms:
     ali:
-      accessId: YOUR_CLOUD_KEY_HERE
-      accessSecret: YOUR_CLOUD_KEY_HERE
+      accessId: ${ALI_SMS_ACCESS_ID:YOUR_SMS_ACCESS_ID}
+      accessSecret: ${ALI_SMS_ACCESS_SECRET:YOUR_SMS_ACCESS_SECRET}

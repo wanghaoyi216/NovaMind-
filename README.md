@@ -159,6 +159,35 @@ git clone https://github.com/wanghaoyi216/NovaMind-.git
 cd NovaMind-
 ```
 
+### 1.5️⃣ Configure environment variables
+
+Copy `.env.example` to `.env` and fill in the values you actually use. **No real
+credentials are committed** — everything is wired through Spring's
+`${VAR:default}` placeholders and read from the environment at runtime.
+
+```bash
+cp .env.example .env
+$EDITOR .env
+```
+
+**Required for AI features** (`novamind-aigc`):
+
+| Variable | Purpose | Where to get it |
+|---|---|---|
+| `NVIDIA_API_KEY2` | API key for NVIDIA's integrated inference API (DeepSeek-R1, DeepSeek-V3, Kimi K2, Llama 3.2 Vision, …) | https://integrate.api.nvidia.com/ |
+
+**Optional — only needed if you actually use Alibaba Cloud** (otherwise the
+SMS / OSS features are no-ops with the placeholder defaults):
+
+| Variable | Purpose |
+|---|---|
+| `ALI_SMS_ACCESS_ID`, `ALI_SMS_ACCESS_SECRET` | Alibaba Cloud SMS — used by `novamind-message` for verification codes / order notifications |
+| `ALI_OSS_ACCESS_ID`, `ALI_OSS_ACCESS_KEY`, `ALI_OSS_ENDPOINT`, `ALI_OSS_BUCKET` | Alibaba Cloud OSS — used when `tj.platform.file=ALI` (default is `MINIO`) |
+
+> 💡 `novamind-media` defaults to **MinIO** (self-hosted, configured in
+> `docker-compose.yml`). To switch to Alibaba OSS, set
+> `ALI_OSS_*` env vars **and** flip `tj.platform.file` from `MINIO` to `ALI`.
+
 ### 2️⃣ Bring up the full stack (infrastructure + services)
 
 ```bash
