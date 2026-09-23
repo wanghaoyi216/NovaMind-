@@ -1,0 +1,5 @@
+seata:
+  enabled: false
+  application-id: ${spring.application.name}
+  tx-service-group: novamind_tx_group
+

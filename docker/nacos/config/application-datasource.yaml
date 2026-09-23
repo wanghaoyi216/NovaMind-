@@ -1,0 +1,38 @@
+# =============================================================================
+#  R15 - Nacos 共享配置：application-datasource.yaml
+#  DataId : application-datasource.yaml   Group : DEFAULT_GROUP
+#  说明：与 nacos_config_export/application-datasource.yaml 同源，
+#        此文件随 docker-compose 一同启动，自动推送到本地 Nacos。
+#        业务服务通过 spring.config.import: nacos:application-datasource.yaml 引入。
+# =============================================================================
+spring:
+  datasource:
+    hikari:
+      connection-timeout: 3000
+      validation-timeout: 2000
+      max-lifetime: 1800000
+      idle-timeout: 600000
+      leak-detection-threshold: 10000
+      pool-name: HikariPool-Novamind
+      auto-commit: true
+
+novamind:
+  datasource:
+    hikari:
+      enabled: true
+      auto-pool-size: true
+      minimum-idle: 5
+      connection-timeout: 3000
+      validation-timeout: 2000
+      max-lifetime: 1800000
+      idle-timeout: 600000
+      leak-detection-threshold: 10000
+      pool-name: HikariPool-Novamind
+      auto-commit: true
+    slow-query:
+      enabled: true
+      threshold-ms: 200
+      warn-log-enabled: true
+      print-full-sql: true
+      max-param-length: 500
+      trace-id-key: traceId

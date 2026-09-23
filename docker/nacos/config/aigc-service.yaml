@@ -1,0 +1,89 @@
+tj:
+  minio:
+    endpoint: http://localhost:9000
+    public-endpoint: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket: novamind-aigc
+  ai:
+    chat-provider: NVIDIA
+    chat-type: ENHANCE
+    audio-type: DASHSCOPE
+    graph:
+      enabled: false
+      uri: http://localhost:7474
+      username: neo4j
+      password: novamindneo4j
+      database: neo4j
+      max-prompt-facts: 8
+    rag:
+      similarity-threshold: 0.6
+      top-k: 6
+    session:
+      title: "知行AI助手"
+      describe: "课程学习、选课咨询、学习规划、智能问答"
+      examples:
+        - title: "Java入门"
+          describe: "Java零基础怎么入门？"
+        - title: "Spring Boot"
+          describe: "Spring Boot适合先学吗？"
+        - title: "课程推荐"
+          describe: "帮我推荐一门后端开发课程"
+        - title: "学习路线"
+          describe: "想转行做Java开发，应该怎么规划学习路线？"
+    prompt:
+      system:
+        chat:
+          dataId: system-chat-message.txt
+        route-agent:
+          dataId: route-agent-system-message.txt
+        recommend-agent:
+          dataId: recommend-agent-system-message.txt
+        buy-agent:
+          dataId: buy-agent-system-message.txt
+        text:
+          dataId: text-system-chat-message.txt
+spring:
+  ai:
+    dashscope:
+      api-key: ${DASHSCOPE_API_KEY:local-dev-placeholder}
+    openai:
+      api-key: ${NVIDIA_API_KEY2:${OPENAI_API_KEY:local-dev-placeholder}}
+      base-url: https://integrate.api.nvidia.com/v1
+      chat:
+        options:
+          model: deepseek-ai/deepseek-r1
+    # NVIDIA 多模态模型配置（OpenAI 兼容格式）
+    nvidia:
+      api-key: ${NVIDIA_API_KEY2:local-dev-placeholder}
+      base-url: https://integrate.api.nvidia.com/v1
+      text-models:
+        - deepseek-ai/deepseek-r1
+        - deepseek-ai/deepseek-v3.2-exp
+        - moonshotai/kimi-k2
+      vision-models:
+        - meta/llama-3.2-90b-vision-instruct
+        - meta/llama-3.2-11b-vision-instruct
+        - nvidia/nvlm-d-72b
+        - nvidia/neva-22b
+        - qwen/qwen2-vl-72b-instruct
+        - microsoft/phi-3.5-vision-instruct
+        - mistralai/pixtral-12b
+        - mistralai/pixtral-large
+    vectorstore:
+      redis:
+        initialize-schema: false
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: novamind
+      authentication-database: admin
+      username: novamind
+      password: "123321"
+      auto-index-creation: true
+    redis:
+      host: localhost
+      port: 6379
+      password: 123321
+      client-type: jedis

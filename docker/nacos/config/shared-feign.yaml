@@ -1,0 +1,13 @@
+spring:
+  cloud:
+    openfeign:
+      okhttp:
+        enabled: true
+      httpclient:
+        enabled: false
+      compression:
+        request:
+          enabled: true
+        response:
+          enabled: true
+

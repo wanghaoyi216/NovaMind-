@@ -1,0 +1,9 @@
+{
+  "_comment": "R24 Sentinel 工具权限按 Agent 隔离 —— 外部化规则 (启动时由 AgentIsolationAutoConfiguration 加载)",
+  "_format": "agentName -> QPS 阈值",
+  "_isolation_key": "resourceName = agent:<agentName>:tool:default",
+  "learning": 100,
+  "qa": 50,
+  "homework": 30,
+  "writing": 40
+}

@@ -1,0 +1,150 @@
+# ============================================================
+# R27 ShardingSphere 5.4.x 分库分表规则 (novamind-trace / novamind-data 报表)
+# ============================================================
+# 加载方式: DataSourceShardingConfig 读取 classpath:sharding-rules.yaml
+# 业务范围:
+#   - novamind_trade_order        按 order_id 哈希分 16 库 × 16 表 (共 256 物理表)
+#   - novamind_learning_progress  按 user_id  哈希分 8 库         (单库多表, 由 MyCat/应用层接管)
+#   - novamind-trade 主库 + 2 从库读写分离
+# ============================================================
+
+dataSources:
+  # ---- 16 个订单分库 (按 order_id % 16 路由) ----
+  db_trade_0: &ds_trade_template
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://mysql-trade:3306/novamind_trade_${0..15}?useSSL=false&serverTimezone=UTC
+    username: trade
+    password: ${TRADE_DB_PWD:trade123}
+    connectionTimeout: 30000
+    idleTimeout: 600000
+    maxPoolSize: 50
+    minPoolSize: 5
+
+  # ---- 8 个学习进度分库 (按 user_id % 8 路由) ----
+  db_learn_0: &ds_learn_template
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://mysql-learn:3306/novamind_learn_${0..7}?useSSL=false&serverTimezone=UTC
+    username: learn
+    password: ${LEARN_DB_PWD:learn123}
+    connectionTimeout: 30000
+    idleTimeout: 600000
+    maxPoolSize: 40
+    minPoolSize: 5
+
+  # ---- 读写分离 (novamind-trade: 1 master + 2 slaves) ----
+  novamind_trade_master:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://mysql-trade-master:3306/novamind_trade?useSSL=false&serverTimezone=UTC
+    username: trade
+    password: ${TRADE_DB_PWD:trade123}
+    maxPoolSize: 60
+  novamind_trade_slave_0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://mysql-trade-slave-0:3306/novamind_trade?useSSL=false&serverTimezone=UTC&readFromMasterWhenNoSlaves=true
+    username: trade_ro
+    password: ${TRADE_RO_PWD:trade_ro123}
+    maxPoolSize: 80
+  novamind_trade_slave_1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcUrl: jdbc:mysql://mysql-trade-slave-1:3306/novamind_trade?useSSL=false&serverTimezone=UTC&readFromMasterWhenNoSlaves=true
+    username: trade_ro
+    password: ${TRADE_RO_PWD:trade_ro123}
+    maxPoolSize: 80
+
+# ============================================================
+# 规则定义 (ShardingSphere 5.4.x 新的 YAML 规则模式)
+# ============================================================
+rules:
+  # ---- 1) 读写分离规则 (主从) ----
+  - !READWRITE_SPLITTING
+    dataSources:
+      novamind_trade_rw:
+        type: Static
+        props:
+          write-data-source-name: novamind_trade_master
+          read-data-source-names: novamind_trade_slave_0,novamind_trade_slave_1
+        loadBalancerName: round_robin
+    loadBalancers:
+      round_robin:
+        type: ROUND_ROBIN
+
+  # ---- 2) 分库分表规则: novamind_trade_order ----
+  - !SHARDING
+    tables:
+      novamind_trade_order:
+        actualDataNodes: db_trade_${0..15}.t_trade_order_${0..15}
+        databaseStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: order_id_db_inline
+        tableStrategy:
+          standard:
+            shardingColumn: order_id
+            shardingAlgorithmName: order_id_tbl_inline
+        keyGenerateStrategy:
+          column: order_id
+          keyGeneratorName: snowflake
+    autoTables: {}
+    bindingTables:
+      - novamind_trade_order
+    broadcastTables: []
+    shardingAlgorithms:
+      order_id_db_inline:
+        type: CLASS_BASED
+        props:
+          strategy: standard
+          algorithmClassName: com.novamind.data.sharding.OrderIdDbShardingAlgorithm
+      order_id_tbl_inline:
+        type: CLASS_BASED
+        props:
+          strategy: standard
+          algorithmClassName: com.novamind.data.sharding.OrderIdTableShardingAlgorithm
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+        props:
+          worker-id: 27
+
+  # ---- 3) 分库分表规则: novamind_learning_progress (按 user_id 分 8 库, 单表) ----
+  - !SHARDING
+    tables:
+      novamind_learning_progress:
+        actualDataNodes: db_learn_${0..7}.novamind_learning_progress
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: user_id_db_inline
+        keyGenerateStrategy:
+          column: id
+          keyGeneratorName: snowflake
+    shardingAlgorithms:
+      user_id_db_inline:
+        type: CLASS_BASED
+        props:
+          strategy: standard
+          algorithmClassName: com.novamind.data.sharding.LearningProgressDbShardingAlgorithm
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+        props:
+          worker-id: 28
+
+# ============================================================
+# 属性配置
+# ============================================================
+props:
+  # 5.4.x 新增: 展示真实的 SQL (开发环境开启)
+  sql-show: true
+  sql-simple: false
+  # 强制走 master (全表扫描 / Hint 场景)
+  # 见 ShardingHintManager.HINT_FULL_SCAN
+  check-table-metadata-enabled: false
+  # 5.4.x: 联邦查询支持 (跨库 JOIN 自动归并)
+  query-federation-enabled: true
+  # 慢 SQL 阈值 (ms)
+  max-connections-size-per-query: 50

@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    nacos:
+      server-addr: localhost:8848
+      username: nacos
+      password: nacos
+      discovery:
+        group: DEFAULT_GROUP
+      config:
+        file-extension: yaml
+        enabled: false
+  config:
+    import:
+      - optional:nacos:${spring.application.name}.yaml
+      - optional:nacos:shared-spring.yaml
+      - optional:nacos:shared-redis.yaml
+      - optional:nacos:shared-logs.yaml
+server:
+  port: 10010
+logging:
+  level:
+    com.novamind: debug
+tj:
+  auth:
+    excludePath:
+      - GET:/actuator/**
+      - GET:/jwks
+      - POST:/accounts/login
+      - POST:/accounts/admin/login
+      - GET:/accounts/refresh
+      - POST:/users/register
+      - GET:/users/info/**
+      - GET:/categorys/all
+      - GET:/medias/signature/play
+      - GET:/session/hot
+      - GET:/ais/session/hot
+      - GET:/chat/templates
+      - GET:/ais/chat/templates

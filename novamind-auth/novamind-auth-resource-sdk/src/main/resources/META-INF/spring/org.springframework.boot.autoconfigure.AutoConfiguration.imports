@@ -1,0 +1,2 @@
+com.novamind.authsdk.resource.config.ResourceInterceptorConfiguration
+com.novamind.authsdk.resource.config.FeignRelayUserAutoConfiguration

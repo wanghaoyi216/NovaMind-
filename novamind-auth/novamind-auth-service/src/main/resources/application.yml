@@ -1,0 +1,38 @@
+server:
+  port: 8081  #端口
+  tomcat:
+    uri-encoding: UTF-8   #服务编码
+spring:
+  profiles:
+    active: local
+  application:
+    name: auth-service
+encrypt:
+  key-store:
+    # 别名必须与 novamind.jks 内实际条目一致：该库是 PKCS12，唯一别名是 tjxt
+    # （项目由天机学堂 tjxt 二次开发而来，改名时漏改了这里）。
+    # 写成 novamind 时 getKeyPair() 会静默返回 publicKey=null 的 KeyPair，
+    # 导致 /jwks 抛 NPE、网关验签全部失败、所有需登录接口返回 401。
+    alias: tjxt  #别名
+    location: classpath:novamind.jks  #KeyStore 证书库名称
+    password: tj123321   #证书库密码
+    secret: tj123321   #秘钥
+tj:
+  swagger:
+    enable: true
+    enableResponseWrap: true
+    package-path: com.novamind.auth.controller
+    title: 知行 AI 学堂 - 权限微服务接口文档
+    description: 该服务用于管理权限相关信息
+    contact-name: 传智教育·研究院
+    contact-url: http://www.itcast.cn/
+    contact-email: zhanghuyi@itcast.cn
+    version: v1.0
+  auth:
+    resource:
+      enable: true
+      includeLoginPaths:
+        - /menus/me
+        - /accounts/logout
+  jdbc:
+    database: novamind_auth

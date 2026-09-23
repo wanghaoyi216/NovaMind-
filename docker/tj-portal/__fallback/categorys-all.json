@@ -1,0 +1,52 @@
+{
+  "code": 200,
+  "msg": "OK",
+  "data": [
+    {
+      "id": 1000001,
+      "name": "后端开发",
+      "level": 1,
+      "parentId": 0,
+      "children": [
+        {
+          "id": 1000002,
+          "name": "Java",
+          "level": 2,
+          "parentId": 1000001,
+          "children": [
+            {
+              "id": 1000003,
+              "name": "Spring Boot",
+              "level": 3,
+              "parentId": 1000002,
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 1000004,
+      "name": "前端开发",
+      "level": 1,
+      "parentId": 0,
+      "children": [
+        {
+          "id": 1000005,
+          "name": "Vue",
+          "level": 2,
+          "parentId": 1000004,
+          "children": [
+            {
+              "id": 1000006,
+              "name": "工程化",
+              "level": 3,
+              "parentId": 1000005,
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

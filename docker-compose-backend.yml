@@ -1,0 +1,99 @@
+# ============================================================
+# 后端微服务容器化运行文件（本地部署用，独立于 docker-compose.yml）
+#
+# 背景：镜像由仓库根多阶段 Dockerfile 构建（本机无 JDK/Maven），
+#       命名规范 novamind/<module>:1.0.0。
+#       业务服务 application-test.yml 已内置 novamind-nacos:8848 等容器名，
+#       此处仅做必要覆盖：网关的 nacos 地址（其 test 配置仍为 localhost）、
+#       健康检查端口 SERVER_PORT、Jaeger OTLP 上报端点、JVM 内存上限。
+#
+# 用法：docker compose -f docker-compose-backend.yml up -d gateway auth user
+# 网络：复用 docker-compose.yml 创建的 novamind-network（external）。
+# ============================================================
+
+x-backend-env: &backend-env
+  TZ: Asia/Shanghai
+  SPRING_PROFILES_ACTIVE: test
+  SPRING_CLOUD_NACOS_SERVER_ADDR: novamind-nacos:8848
+  OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318/v1/traces
+
+x-backend-base: &backend-base
+  restart: unless-stopped
+  networks:
+    - novamind-network
+  logging:
+    driver: json-file
+    options:
+      max-size: "50m"
+      max-file: "3"
+
+services:
+  gateway:
+    image: novamind/gateway:1.0.0
+    container_name: novamind-gateway
+    <<: *backend-base
+    environment:
+      <<: *backend-env
+      SERVER_PORT: "10010"
+      JAVA_OPTS: "-Xms256m -Xmx800m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
+    ports:
+      - "10010:10010"
+
+  auth:
+    image: novamind/auth:1.0.0
+    container_name: novamind-auth
+    <<: *backend-base
+    environment:
+      <<: *backend-env
+      SERVER_PORT: "8081"
+      JAVA_OPTS: "-Xms256m -Xmx700m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
+
+  user:
+    image: novamind/user:1.0.0
+    container_name: novamind-user
+    <<: *backend-base
+    environment:
+      <<: *backend-env
+      SERVER_PORT: "8082"
+      JAVA_OPTS: "-Xms256m -Xmx700m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
+
+  course:
+    image: novamind/course:1.0.0
+    container_name: novamind-course
+    <<: *backend-base
+    environment:
+      <<: *backend-env
+      SERVER_PORT: "8086"
+      JAVA_OPTS: "-Xms256m -Xmx700m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
+
+  search:
+    image: novamind/search:1.0.0
+    container_name: novamind-search
+    <<: *backend-base
+    environment:
+      <<: *backend-env
+      SERVER_PORT: "8083"
+      JAVA_OPTS: "-Xms256m -Xmx700m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
+
+  learning:
+    image: novamind/learning:1.0.0
+    container_name: novamind-learning
+    <<: *backend-base
+    environment:
+      <<: *backend-env
+      SERVER_PORT: "8090"
+      JAVA_OPTS: "-Xms256m -Xmx700m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
+
+  aigc:
+    image: novamind/aigc:1.0.0
+    container_name: novamind-aigc
+    <<: *backend-base
+    environment:
+      <<: *backend-env
+      SERVER_PORT: "8094"
+      JAVA_OPTS: "-Xms256m -Xmx900m -XX:+UseG1GC -XX:+ExitOnOutOfMemoryError"
+
+networks:
+  novamind-network:
+    external: true
+    name: novamind-network

@@ -1,0 +1,275 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: novamind-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      TZ: Asia/Shanghai
+      # 敏感配置一律从 .env 注入（参考 .env.example），不要把真实口令提交到仓库
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: novamind
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - ./docker/mysql/conf:/etc/mysql/conf.d:ro
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -p${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-mysql
+
+  redis:
+    image: redis:7.4
+    container_name: novamind-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./docker/redis/conf:/usr/local/etc/redis:ro
+      - ./docker/redis/data:/data
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-redis
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: novamind-rabbitmq
+    hostname: novamind-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-rabbitmq
+
+  nacos:
+    image: nacos/nacos-server:v2.4.2
+    container_name: novamind-nacos
+    environment:
+      MODE: standalone
+      JVM_XMS: 512m
+      JVM_XMX: 512m
+      NACOS_AUTH_ENABLE: "false"
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8848/nacos/actuator/health | grep -q '\"status\":\"UP\"'"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-nacos
+
+  minio:
+    image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+    container_name: novamind-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - ./docker/minio/data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-minio
+
+  mongodb:
+    image: mongo:7.0
+    container_name: novamind-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - novamind_mongodb_data:/data/db
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-mongodb
+
+  neo4j:
+    image: neo4j:5.26-community
+    container_name: novamind-neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: "${NEO4J_USER}/${NEO4J_PASSWORD}"
+      NEO4J_dbms_memory_heap_initial__size: 512m
+      NEO4J_dbms_memory_heap_max__size: 512m
+      NEO4J_server_default__listen__address: 0.0.0.0
+      NEO4J_server_default__advertised__address: localhost
+    volumes:
+      - novamind_neo4j_data:/data
+      - novamind_neo4j_logs:/logs
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-neo4j
+
+  # 与后端 ES Java API Client 版本对齐（根 pom.xml elasticsearch.version=8.13.4）。
+  # 注意：首次从 7.12.1 切换时，旧的 docker/es/data 数据目录不满足官方 7.17+ 升级路径，
+  # 需先备份并清空该目录（详见根 README「已知事项」）。
+  es:
+    image: elasticsearch:8.13.4
+    container_name: novamind-es
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+      xpack.security.enabled: "false"
+    volumes:
+      - ./docker/es/data:/usr/share/elasticsearch/data
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-es
+
+  xxl-job:
+    image: xuxueli/xxl-job-admin:2.3.0
+    container_name: novamind-xxljob
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      # 覆盖 application.properties 中硬编码的数据源口令，统一从 .env 注入
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    ports:
+      - "8880:8880"
+    volumes:
+      - ./docker/xxl-job/application.properties:/application.properties:ro
+    command: ["--spring.config.location=/application.properties"]
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-xxljob
+
+  # 分布式追踪试点：Jaeger all-in-one（含 collector + query + UI）。
+  # Java 服务经 OTLP HTTP 上报 span（默认 localhost:4318/v1/traces），
+  # 链路查看地址 http://localhost:16686
+  jaeger:
+    image: jaegertracing/all-in-one:1.62.0
+    container_name: novamind-jaeger
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4318:4318"   # OTLP HTTP（服务端默认上报端点）
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - jaeger
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: novamind-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/tj-portal:/usr/share/nginx/html/tj-portal:ro
+      - ./docker/tj-admin:/usr/share/nginx/html/tj-admin:ro
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-nginx
+
+  # ---- 新版前端（novamind-portal 源码构建，替代旧版 dist） ----
+  # 默认 `docker compose up` 不启动本服务（位于 portal profile 下，行为完全不变，
+  # 80 端口的 nginx 仍服务 docker/tj-portal、docker/tj-admin 旧版遗留 dist）。
+  # 启用新版：docker compose --profile portal up -d --build portal，访问 :8080。
+  portal:
+    build:
+      context: ./novamind-portal
+      dockerfile: Dockerfile
+    image: novamind-portal:local
+    container_name: novamind-portal
+    profiles:
+      - "portal"
+    ports:
+      - "8080:80"
+    environment:
+      # 网关地址。后端 Java 服务在宿主机运行（见 docker/README-local.md），
+      # 容器内经 host.docker.internal 访问（Linux 由下方 extra_hosts 的
+      # host-gateway 映射提供解析）；若网关也容器化，可设
+      # PORTAL_GATEWAY_URL=http://<网关容器名或服务名>:10010 覆盖。
+      GATEWAY_URL: ${PORTAL_GATEWAY_URL:-http://host.docker.internal:10010}
+    # 注：compose 中没有 gateway 服务（后端在宿主机运行），无法声明
+    # depends_on: gateway；portal 与后端无启动顺序耦合，健康检查只自检 /healthz。
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1/healthz || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      novamind-network:
+        aliases:
+          - novamind-portal
+
+volumes:
+  novamind_mongodb_data:
+  novamind_neo4j_data:
+  novamind_neo4j_logs:
+
+networks:
+  novamind-network:
+    name: novamind-network
+    driver: bridge

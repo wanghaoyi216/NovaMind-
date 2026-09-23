@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  R13 OpenTelemetry：日志输出 traceId / spanId。
+  通过 %X{traceId} / %X{spanId} 把 Micrometer Tracing 自动写入 SLF4J MDC 的字段渲染出来。
+  -X{...:-} 语法：MDC 无值时输出空串而非字符串 "null"，避免污染日志采集。
+-->
+<configuration>
+    <!-- 控制台彩色输出（开发期）-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [traceId=%X{traceId:-},spanId=%X{spanId:-}] %logger{40} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 业务日志 INFO 起步；调试 OTel 时可单独调 DEBUG-->
+    <logger name="com.novamind" level="INFO"/>
+    <!-- OTel / Micrometer Tracing 内部 INFO 即可；噪声集中在 DEBUG-->
+    <logger name="io.opentelemetry" level="INFO"/>
+    <logger name="io.micrometer.tracing" level="INFO"/>
+    <logger name="org.springframework.boot.actuate.autoconfigure.tracing" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

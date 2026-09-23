@@ -1,0 +1,10 @@
+.git
+.idea
+docker/mysql/data
+docker/redis/data
+docker/es/data
+docker/minio/data
+docker/tj-admin
+docker/tj-portal/.git
+**/target/test-classes
+**/*.original

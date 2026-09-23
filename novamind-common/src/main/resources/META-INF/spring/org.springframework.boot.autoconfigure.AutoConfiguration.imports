@@ -1,0 +1,14 @@
+com.novamind.common.autoconfigure.mq.MqConfig
+com.novamind.common.autoconfigure.mvc.JsonConfig
+com.novamind.common.autoconfigure.mvc.MvcConfig
+com.novamind.common.autoconfigure.mvc.ParamCheckerConfig
+com.novamind.common.autoconfigure.mybatis.MybatisConfig
+com.novamind.common.autoconfigure.redisson.RedissonConfig
+com.novamind.common.autoconfigure.swagger.Knife4jConfiguration
+com.novamind.common.autoconfigure.xxljob.XxlJobConfig
+com.novamind.common.autoconfigure.idempotency.IdempotencyAutoConfiguration
+com.novamind.common.autoconfigure.refreshscope.RuntimeConfigAutoConfiguration
+com.novamind.common.autoconfigure.datasource.HikariAutoConfiguration
+com.novamind.common.autoconfigure.datasource.SlowQueryAutoConfiguration
+com.novamind.common.autoconfigure.tracing.OpenTelemetryAutoConfiguration
+com.novamind.common.autoconfigure.cache.CacheAsideAutoConfiguration

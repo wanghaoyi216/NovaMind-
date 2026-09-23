@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  R13 OpenTelemetry：日志输出 traceId / spanId。
+  与 pay/trade 一致，便于跨服务联合排查。
+-->
+<configuration>
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [traceId=%X{traceId:-},spanId=%X{spanId:-}] %logger{40} - %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <logger name="com.novamind" level="INFO"/>
+    <logger name="io.opentelemetry" level="INFO"/>
+    <logger name="io.micrometer.tracing" level="INFO"/>
+    <logger name="org.springframework.boot.actuate.autoconfigure.tracing" level="INFO"/>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

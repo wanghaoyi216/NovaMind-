@@ -1,0 +1,4 @@
+com.novamind.api.config.RequestIdRelayConfiguration
+com.novamind.api.config.RoleCacheConfig
+com.novamind.api.config.FallbackConfig
+com.novamind.api.config.CategoryCacheConfig

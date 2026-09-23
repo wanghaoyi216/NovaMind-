@@ -1,0 +1,10 @@
+tj:
+  xxl-job:
+    access-token: novamind
+    admin:
+      address: http://localhost:8880/xxl-job-admin
+    executor:
+      app-name: ${spring.application.name}
+      log-path: /tmp/xxl-job/jobhandler
+      log-retention-days: 7
+

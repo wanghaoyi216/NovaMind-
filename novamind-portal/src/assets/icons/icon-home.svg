@@ -1,0 +1,13 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-label="首页">
+  <defs>
+    <linearGradient id="nm-home" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67e8f9"/><stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <g stroke="url(#nm-home)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 11.2 L12 4.2 L20 11.2"/>
+    <path d="M6.2 9.8 V18.2 A1.3 1.3 0 0 0 7.5 19.5 H16.5 A1.3 1.3 0 0 0 17.8 18.2 V9.8"/>
+    <path d="M10.4 19.5 V14.6 A1 1 0 0 1 11.4 13.6 H12.6 A1 1 0 0 1 13.6 14.6 V19.5"/>
+  </g>
+  <path fill="#9be7ff" d="M12 1.6 C12.1 2.6 12.5 3 13.5 3.1 C12.5 3.2 12.1 3.6 12 4.6 C11.9 3.6 11.5 3.2 10.5 3.1 C11.5 3 11.9 2.6 12 1.6 Z"/>
+</svg>

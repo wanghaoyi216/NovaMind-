@@ -1,0 +1,11 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="nmMonoTitle">
+  <title id="nmMonoTitle">NovaMind 智星云 · 单色标记（跟随 currentColor）</title>
+  <g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="rotate(-16 32 33)">
+      <ellipse cx="32" cy="33" rx="25" ry="9" stroke-opacity="0.45"/>
+      <path d="M57 33 A25 9 0 0 0 7 33" stroke-opacity="0.95"/>
+    </g>
+  </g>
+  <path fill="currentColor" d="M32 13 C33.3 27.2 37.8 31.7 52 33 C37.8 34.3 33.3 38.8 32 53 C30.7 38.8 26.2 34.3 12 33 C26.2 31.7 30.7 27.2 32 13 Z"/>
+  <path fill="currentColor" opacity="0.85" d="M50.5 9.5 C50.8 11.6 51.5 12.3 53.6 12.6 C51.5 12.9 50.8 13.6 50.5 15.7 C50.2 13.6 49.5 12.9 47.4 12.6 C49.5 12.3 50.2 11.6 50.5 9.5 Z"/>
+</svg>

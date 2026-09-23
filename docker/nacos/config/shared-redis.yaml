@@ -1,0 +1,9 @@
+spring:
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: 123321
+      timeout: 3000ms
+      client-type: lettuce
+

@@ -1,0 +1,39 @@
+spring:
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: novamind
+    password: "123321"
+    virtual-host: /
+    # ====== P0 改造：全局 publisher-confirm + returns ======
+    # 1. correlated 模式：每条消息带唯一 CorrelationData，回调里能拿到 ack
+    publisher-confirm-type: correlated
+    # 2. publisher-returns: 开启消息无法路由到队列时的 return 回调
+    publisher-returns: true
+    # 3. RabbitTemplate mandatory=true：配合 above 才能进 returnsCallback
+    template:
+      mandatory: true
+      reply-timeout: 5000ms
+      receive-timeout: 5000ms
+    listener:
+      simple:
+        # ====== P0 改造（R5 修正）：acknowledge-mode 保持 auto（容器代管）======
+        # 【为什么不用 manual】manual 模式要求每个 @RabbitListener 方法显式声明
+        #   (Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) 并调用
+        #   channel.basicAck/basicNack。本仓 11 个 listener 方法均无此签名——
+        #   若强行开 manual，框架不代为 ack、用户代码也无法 ack，消息将永久
+        #   unacked：prefetch 耗尽后消费停滞，连接断开无限重投（线上事故级）。
+        # 【auto 为什么安全】Spring 的 auto 是"容器代管"而非 RabbitMQ 原生 autoAck：
+        #   - 方法正常返回 → 容器自动 basicAck
+        #   - 抛异常 → 容器 basicNack + 按下方 retry 策略本地重试 3 次
+        #   - 重试耗尽 → RepublishMessageRecoverer 把消息转入 error.topic 死信
+        # 即：auto + retry + DLX 已等价于"手动 ack 的安全性"，且对现有代码零侵入。
+        # 【未来切 manual 的前置条件】全部 listener 方法补齐 Channel/deliveryTag
+        #   参数并逐一实现 ack/nack 分支后，才允许把此处改为 manual。
+        acknowledge-mode: auto
+        retry:
+          enabled: true
+          initial-interval: 1000ms
+          multiplier: 2
+          max-attempts: 3
+

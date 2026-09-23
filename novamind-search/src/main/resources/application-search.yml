@@ -1,0 +1,43 @@
+# ===================================================================
+# R25 ES8 升级：Elasticsearch 8.x 服务端连接配置
+# ===================================================================
+# 说明：
+#   1. 8.x 默认开启 HTTPS + 安全认证（xpack.security.enabled=true），
+#      本配置演示 HTTP + 匿名模式（dev/test 环境）。
+#   2. 7.x → 8.x 索引格式默认兼容（_source 字段、keyword/text/date 类型），
+#      旧索引不需要重建。
+#   3. 8.x 强制单文档 API：PUT /<index>/_doc/<id> 替代了 7.x 的 POST /<index>/_doc。
+#   4. 8.x 关闭了 _doc 类型：mapping 中不再支持 type 字段，Java 客户端使用新
+#      builder API（co.elastic.clients.elasticsearch.ElasticsearchClient）。
+# ===================================================================
+
+spring:
+  elasticsearch:
+    uris:
+      - http://192.168.150.101:9200
+    connection-timeout: 5s
+    socket-timeout: 30s
+    # 8.x 严格模式（默认 true）：服务端会拒绝 Content-Type/Accept 不规范的请求
+    # 旧 7.x 客户端如果设置了自定义 Content-Type，需要关闭
+    with-meta-header: true
+
+# 自定义 ES8 向量索引与迁移配置
+tj:
+  search:
+    # 7.x → 8.x 索引迁移配置
+    migration:
+      enable: false                       # 是否启用自动迁移（生产建议手动触发）
+      source-index: course                # 7.x 源索引名
+      target-index: course_v8             # 8.x 目标索引名
+      # batch-size: 1000                 # 单批 BulkRequest 文档数（可选）
+    # ES8 原生向量检索（dense_vector）配置
+    memory:
+      index: course_memory                # 向量索引名
+      vector-dim: 1536                    # 向量维度（与 Embedding 模型输出一致）
+      top-k: 10                           # 召回 TopK
+      # similarity: cosine                # 距离函数：cosine / dot_product / l2_norm
+
+logging:
+  level:
+    co.elastic.clients: INFO
+    com.novamind.search: DEBUG

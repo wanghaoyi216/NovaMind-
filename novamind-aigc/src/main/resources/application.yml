@@ -1,0 +1,143 @@
+server:
+  port: 8094  #端口
+  tomcat:
+    uri-encoding: UTF-8   #服务编码
+spring:
+  profiles:
+    active: local
+  application:
+    name: aigc-service
+  main:
+    allow-circular-references: true # 允许循环引用
+tj:
+  swagger:
+    enable: true
+    package-path: com.novamind.aigc.controller
+    title: 知行 AI 学堂 - AIGC接口文档
+    description: 该服务包含AI相关功能
+    contact-name: 传智教育·研究院
+    contact-url: http://www.itcast.cn/
+    contact-email: zhangzhijun@itcast.cn
+    version: v1.0
+    enableResponseWrap: true
+  auth:
+    resource:
+      enable: true
+      # 与网关 gateway-service.yaml 的 excludePath 保持一致：
+      # 这两个是前台落地页要用的公开接口。网关对它们跳过登录（因此不会注入 user-info 头），
+      # 但本服务的 LoginAuthInterceptor 默认拦截所有路径 —— 两边一叠加，
+      # /chat/templates 和 /session/hot 就永远 401。
+      exclude-login-paths:
+        - /chat/templates
+        - /session/hot
+  jdbc:
+    database: novamind_aigc #指定使用的数据库名
+  platform:
+    file: MINIO
+  ai:
+    prompt:
+      system:
+        chat:
+          data-id: system-chat-message.txt
+          group: DEFAULT_GROUP
+          timeout-ms: 20000
+        route-agent:
+          data-id: route-agent-system-message.txt
+        recommend-agent:
+          data-id: recommend-agent-system-message.txt
+        buy-agent:
+          data-id: buy-agent-system-message.txt
+        text:
+          data-id: text-system-chat-message.txt
+    memory:
+      max: 100
+      type: Redis #对话记忆存储方式，Redis / MYSQL / MongoDB
+    context:
+      max-window-tokens: 8192
+      compaction-threshold-ratio: 0.70
+      retain-recent-messages: 20
+      min-messages-before-compaction: 24
+      max-summary-source-tokens: 12000
+      estimated-chars-per-token: 4
+      compaction-enabled: true
+    rag:
+      similarity-threshold: 0.6
+      top-k: 6
+    graph:
+      enabled: true
+      uri: http://localhost:7474
+      username: neo4j
+      password: novamindneo4j
+      database: neo4j
+      max-prompt-facts: 8
+    tools:
+      enabled: true
+      progressive-disclosure: true
+      metadata-budget-ratio: 0.02
+      definitions:
+        - id: course.query-by-id
+          bean-name: courseTools
+          name: queryCourseById
+          description: 根据课程id查询课程详细信息
+          agents:
+            - RECOMMEND
+          priority: 10
+          enabled: true
+        - id: order.pre-place-order
+          bean-name: orderTools
+          name: prePlaceOrder
+          description: 购买课程预下单操作
+          agents:
+            - BUY
+          priority: 10
+          enabled: true
+    chat-type: ENHANCE # ROUTE / ENHANCE / APP
+    chat-provider: NVIDIA # DASHSCOPE / NVIDIA
+    audio-type: DASHSCOPE # OPENAI / DASHSCOPE
+    nvidia:
+      api-key: ${NVIDIA_API_KEY2:local-dev-placeholder}
+      base-url: https://integrate.api.nvidia.com/v1
+      default-text-model: deepseek-ai/deepseek-r1
+      default-vision-model: meta/llama-3.2-90b-vision-instruct
+      text-models:
+        - deepseek-ai/deepseek-r1
+        - deepseek-ai/deepseek-v3.2-exp
+        - moonshotai/kimi-k2
+      vision-models:
+        - meta/llama-3.2-90b-vision-instruct
+        - meta/llama-3.2-11b-vision-instruct
+        - nvidia/nvlm-d-72b
+        - nvidia/neva-22b
+        - qwen/qwen2-vl-72b-instruct
+        - microsoft/phi-3.5-vision-instruct
+        - mistralai/pixtral-12b
+        - mistralai/pixtral-large
+  ali:
+    oss:
+      endpoint: oss-cn-shanghai.aliyuncs.com
+      access-id: ${OSS_ACCESSKEY_ID}
+      access-key: ${OSS_ACCESSKEY_SECRET}
+      bucket: itcast-zzj
+  minio:
+    endpoint: http://localhost:9000
+    public-endpoint: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket: novamind-aigc
+
+# AI 对话"每用户每日 Token 配额"（移植自墨问思路）：自然日窗口，Redis INCRBY 记账，
+# 超限拒绝并返回友好提示；Redis 异常 fail-open 放行。见 com.novamind.aigc.quota.TokenQuotaService
+aigc:
+  quota:
+    daily-token-limit: 200000
+
+# 分布式追踪试点：Micrometer Tracing（桥接 OpenTelemetry）。
+# traceId 会自动写入 slf4j MDC，与 RequestIdFilter 的 requestId 并存互不影响。
+management:
+  tracing:
+    sampling:
+      probability: 1.0 # 试点期全采样，量大后调低
+  otlp:
+    tracing:
+      # OTLP HTTP exporter；容器内部署时通过环境变量覆盖为 http://jaeger:4318/v1/traces
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318/v1/traces}

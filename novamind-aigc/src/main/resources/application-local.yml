@@ -1,0 +1,46 @@
+spring:
+  cloud:
+    nacos:
+      server-addr: localhost:8848 # nacos娉ㄥ唽涓�蹇�
+      username: nacos
+      password: nacos
+      discovery:
+        group: DEFAULT_GROUP
+  config:
+    import:
+      - nacos:${spring.application.name}.yaml # 瀵煎叆鏈�鏈嶅姟鐨勯厤缃�
+      - nacos:shared-spring.yaml # 鍏变韩spring閰嶇疆
+#      - nacos:shared-redis.yaml # 鍏变韩redis閰嶇疆
+      - nacos:shared-logs.yaml # 鍏变韩鏃ュ織閰嶇疆
+      - nacos:shared-feign.yaml # 鍏变韩feign閰嶇疆
+      - nacos:shared-mybatis.yaml # 鍏变韩mybatis閰嶇疆
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: novamind
+      authentication-database: admin #璁よ瘉鏁版嵁搴?
+      username: novamind
+      password: "123321"
+      auto-index-creation: true #鑷�鍔ㄥ垱寤虹储寮�
+    redis:
+      host: localhost
+      port: 6379
+      password: 123321
+      client-type: jedis
+logging:
+  level:
+    com:
+      #      alibaba: debug
+      novamind: debug
+#    org:
+#      springframework:
+#        ai:
+#          chat:
+#            client:
+#              advisor: DEBUG
+#      apache:
+#        hc:
+#          client5:
+#            http:
+#              wire: debug

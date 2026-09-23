@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 任务面板 - 知行 AI 学堂</title>
+    <link rel="stylesheet" href="./assets/aigc-console.css" />
+  </head>
+  <body>
+    <main class="console-shell">
+      <section class="chat-pane" aria-label="AI 对话">
+        <header class="topbar">
+          <a class="back-link" href="/">返回</a>
+          <div>
+            <h1>知行 AI 任务面板</h1>
+            <p>实时查看回答、工具调用、观察结果和性能指标</p>
+          </div>
+        </header>
+
+        <div id="messages" class="messages" aria-live="polite"></div>
+
+        <form id="chatForm" class="composer">
+          <label class="field">
+            <span>问题</span>
+            <textarea id="question" rows="4" required placeholder="输入你要问 AI 的问题"></textarea>
+          </label>
+          <div class="form-grid">
+            <label class="field">
+              <span>会话 ID</span>
+              <input id="sessionId" value="console-session" />
+            </label>
+            <label class="field">
+              <span>Authorization</span>
+              <input id="authorization" placeholder="可粘贴 Bearer Token" />
+            </label>
+          </div>
+          <details class="media-box">
+            <summary>多模态输入</summary>
+            <div class="form-grid">
+              <label class="field">
+                <span>类型</span>
+                <select id="mediaType">
+                  <option value="">无</option>
+                  <option value="image">图片</option>
+                  <option value="audio">音频</option>
+                  <option value="video">视频</option>
+                  <option value="text">文本</option>
+                </select>
+              </label>
+              <label class="field">
+                <span>MIME</span>
+                <input id="mimeType" placeholder="image/png" />
+              </label>
+              <label class="field wide">
+                <span>资源 URL</span>
+                <input id="mediaUrl" placeholder="https://example.com/demo.png" />
+              </label>
+              <label class="field wide">
+                <span>说明文本</span>
+                <input id="mediaText" placeholder="图片/音视频的说明、OCR 或 ASR 文本" />
+              </label>
+            </div>
+          </details>
+          <div class="actions">
+            <button id="sendBtn" type="submit">发送</button>
+            <button id="stopBtn" type="button">停止</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="side-pane" aria-label="执行过程与指标">
+        <section class="metrics-panel">
+          <h2>性能指标</h2>
+          <dl class="metrics-grid">
+            <div><dt>吞吐量</dt><dd id="throughput">0 token/s</dd></div>
+            <div><dt>输入 Token</dt><dd id="promptTokens">0</dd></div>
+            <div><dt>输出 Token</dt><dd id="completionTokens">0</dd></div>
+            <div><dt>上下文占比</dt><dd id="contextUsage">0%</dd></div>
+          </dl>
+          <div class="meter" aria-hidden="true"><span id="contextMeter"></span></div>
+        </section>
+
+        <section class="timeline-panel">
+          <h2>Thought / Action / Observation</h2>
+          <ol id="timeline" class="timeline"></ol>
+        </section>
+      </aside>
+    </main>
+
+    <script src="./assets/aigc-console.js"></script>
+  </body>
+</html>

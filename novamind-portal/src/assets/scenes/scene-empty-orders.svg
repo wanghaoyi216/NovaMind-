@@ -1,0 +1,34 @@
+<svg width="160" height="120" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-label="暂无订单">
+  <defs>
+    <radialGradient id="nm-sc3-v" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#9aa2ac" stop-opacity="0.2"/><stop offset="1" stop-color="#9aa2ac" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="nm-sc3-c" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#b7bec7" stop-opacity="0.15"/><stop offset="1" stop-color="#b7bec7" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="nm-sc3-g" x1="52" y1="30" x2="108" y2="94" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c3cad3"/><stop offset="1" stop-color="#d8dce1"/>
+    </linearGradient>
+    <filter id="nm-sc3-b" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.2"/></filter>
+  </defs>
+  <circle cx="104" cy="36" r="38" fill="url(#nm-sc3-v)"/>
+  <circle cx="44" cy="88" r="34" fill="url(#nm-sc3-c)"/>
+  <g filter="url(#nm-sc3-b)" stroke="url(#nm-sc3-g)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M62 34 H98 V88 L92.7 84.2 L87.3 88 L82 84.2 L76.7 88 L71.3 84.2 L62 88 Z"/>
+    <path d="M70 46 H90 M70 56 H90 M70 66 H82" stroke-opacity="0.75"/>
+  </g>
+  <ellipse cx="80" cy="62" rx="46" ry="14" stroke="url(#nm-sc3-g)" stroke-width="1.3" stroke-opacity="0.35" transform="rotate(-12 80 62)"/>
+  <g fill="#ffffff">
+    <path d="M118 60 C118.4 63 119.5 64.1 122.5 64.5 C119.5 64.9 118.4 66 118 69 C117.6 66 116.5 64.9 113.5 64.5 C116.5 64.1 117.6 63 118 60 Z">
+      <animate attributeName="opacity" values="0.9;0.25;0.9" dur="2.7s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="36" cy="38" r="1.5" opacity="0.55">
+      <animate attributeName="opacity" values="0.55;0.14;0.55" dur="2.4s" begin="0.8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  <g transform="rotate(-20 132 92)">
+    <line x1="124" y1="92" x2="140" y2="92" stroke="url(#nm-sc3-g)" stroke-width="1.6" stroke-linecap="round" stroke-dasharray="9 17">
+      <animate attributeName="stroke-dashoffset" values="26;0" dur="3s" repeatCount="indefinite"/>
+    </line>
+  </g>
+</svg>

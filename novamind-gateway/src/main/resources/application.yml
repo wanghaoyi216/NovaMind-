@@ -1,0 +1,105 @@
+server:
+  port: 10010  #端口
+  tomcat:
+    uri-encoding: UTF-8   #服务编码
+spring:
+  profiles:
+    active: local
+  application:
+    name: gateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: ms
+          uri: lb://media-service
+          predicates:
+            - Path=/ms/**
+        - id: as
+          uri: lb://auth-service
+          predicates:
+            - Path=/as/**
+          filters:
+            - PreserveHostHeader
+        - id: ds
+          uri: lb://data-service
+          predicates:
+            - Path=/ds/**
+        - id: sms
+          uri: lb://message-service
+          predicates:
+            - Path=/sms/**
+        - id: us
+          uri: lb://user-service
+          predicates:
+            - Path=/us/**
+        - id: cs
+          uri: lb://course-service
+          predicates:
+            - Path=/cs/**
+        - id: ss
+          uri: lb://search-service
+          predicates:
+            - Path=/ss/**
+        - id: ls
+          uri: lb://learning-service
+          predicates:
+            - Path=/ls/**
+        - id: ps
+          uri: lb://pay-service
+          predicates:
+            - Path=/ps/**
+        - id: ts
+          uri: lb://trade-service
+          predicates:
+            - Path=/ts/**
+        - id: es
+          uri: lb://exam-service
+          predicates:
+            - Path=/es/**
+        - id: rs
+          uri: lb://remark-service
+          predicates:
+            - Path=/rs/**
+        - id: prs
+          uri: lb://promotion-service
+          predicates:
+            - Path=/prs/**
+        - id: ais
+          uri: lb://aigc-service
+          predicates:
+            - Path=/ais/**
+      default-filters:
+        - StripPrefix=1 # 切掉服务前缀
+      globalcors: # 全局的跨域处理
+        add-to-simple-url-handler-mapping: true # 解决options请求被拦截问题
+        corsConfigurations:
+          '[/**]':
+            allowedOriginPatterns: # CORS 白名单（R5 安全修复）
+              # 【为什么不能配 "*" + allowCredentials=true】浏览器规范禁止该组合下
+              # 返回 Access-Control-Allow-Origin:*，而 Spring 会回显任意 Origin——
+              # 等效于允许任何网站以用户凭证（Cookie/JWT）跨域调用本站 API，
+              # 是 CSRF / 凭证泄露的典型反模式。
+              # 本地开发：Vite 默认端口段；生产环境通过 Nacos 覆盖为真实域名列表。
+              - "http://localhost:*"
+              - "http://127.0.0.1:*"
+              - "https://*.novamind.com"
+            allowedMethods: # 允许的跨域ajax的请求方式
+              - "GET"
+              - "POST"
+              - "DELETE"
+              - "PUT"
+              - "OPTIONS"
+            allowedHeaders: "*" # 允许在请求中携带的头信息
+            allowCredentials: true # 是否允许携带cookie（配合上方白名单才安全）
+            maxAge: 360000 # 这次跨域检测的有效期
+
+# 分布式追踪试点：Micrometer Tracing（桥接 OpenTelemetry）。
+# traceId 会自动写入 slf4j MDC，与 RequestIdFilter 的 requestId 并存互不影响。
+management:
+  tracing:
+    sampling:
+      probability: 1.0 # 试点期全采样，量大后调低
+  otlp:
+    tracing:
+      # OTLP HTTP exporter；容器内部署时通过环境变量覆盖为 http://jaeger:4318/v1/traces
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318/v1/traces}

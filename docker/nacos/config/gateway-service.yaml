@@ -1,0 +1,14 @@
+tj:
+  auth:
+    excludePath:
+      - GET:/actuator/**
+      - GET:/jwks
+      - POST:/accounts/login
+      - POST:/accounts/admin/login
+      - GET:/accounts/refresh
+      - POST:/users/register
+      - GET:/users/info/**
+      - GET:/categorys/all
+      - GET:/medias/signature/play
+      - GET:/session/hot
+      - GET:/chat/templates

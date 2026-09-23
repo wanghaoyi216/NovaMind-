@@ -1,0 +1,39 @@
+# ============================================================
+# R13 OpenTelemetry 通用 profile (application-otel.yml)
+# ============================================================
+# 启用方式：在业务服务的 application.yml 中追加
+#   spring.profiles.include: otel
+# 或启动参数 --spring.profiles.active=local,otel
+#
+# 适用服务：novamind-gateway / novamind-pay / novamind-trade / novamind-learning 及未来接入追踪的服务
+# ------------------------------------------------------------
+novamind:
+  tracing:
+    enabled: true
+    # OTLP gRPC collector 地址（本地 Jaeger / Tempo / OTel Collector 默认端口）
+    endpoint: http://localhost:4317
+    # 采样率：1.0 全采样（开发/压测）；0.1 推荐生产值
+    sampling-probability: 1.0
+
+# Spring Boot 原生 OTel 自动配置（与 novamind.tracing.* 协同）
+management:
+  # 暴露 actuator endpoints：health 必备，prometheus 留作后续 R14 指标采集
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: when_authorized
+  tracing:
+    # Micrometer Tracing 全局采样率，与 novamind.tracing.sampling-probability 等价（后者优先）
+    sampling:
+      probability: 1.0
+  otlp:
+    tracing:
+      # gRPC endpoint（注意：path 留空，OTLP gRPC 用 :4317 单端口协议）
+      endpoint: http://localhost:4317
+      # 单次 export RPC 超时
+      timeout: 10s
+      # 批量相关参数（按需调整）
+      compression: gzip

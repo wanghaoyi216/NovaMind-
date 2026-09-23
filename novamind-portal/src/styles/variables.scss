@@ -1,0 +1,104 @@
+/* ============================================================
+   variables.scss —— 兼容层（Compatibility Shim）
+   ------------------------------------------------------------
+   历史页面通过 `@use '@/styles/variables.scss' as *` 引用 SCSS 变量。
+   这里把它们全部映射到 design-system.scss 的语义令牌，
+   使旧页面无需改动即可自动获得正确的浅色/深色主题行为。
+
+   新代码请直接使用 `var(--nm-*)`，不要新增这里的变量。
+   ============================================================ */
+
+/* --- 品牌与语义色 --- */
+$primary: var(--nm-accent);
+$primary-light: var(--nm-accent);
+$primary-dark: var(--nm-accent-hover);
+$primary-subtle: var(--nm-accent-soft);
+
+$secondary: var(--nm-accent);
+$secondary-light: var(--nm-accent);
+$secondary-dark: var(--nm-accent-hover);
+$secondary-subtle: var(--nm-accent-soft);
+
+$accent: var(--nm-cyan);
+$accent-light: var(--nm-cyan);
+$accent-dark: var(--nm-cyan);
+$accent-subtle: var(--nm-cyan-soft);
+
+$success: var(--nm-success);
+$success-light: var(--nm-success);
+$success-subtle: var(--nm-success-soft);
+
+$danger: var(--nm-danger);
+$danger-light: var(--nm-danger);
+$danger-subtle: var(--nm-danger-soft);
+
+$warning: var(--nm-warning);
+$warning-light: var(--nm-warning);
+$warning-subtle: var(--nm-warning-soft);
+
+$info: var(--nm-ink-3);
+$info-light: var(--nm-ink-3);
+$info-subtle: var(--nm-surface-3);
+
+/* --- 背景与表面 --- */
+$bg-deep: var(--nm-paper-deep);
+$bg-dark: var(--nm-paper-deep);
+$bg-card: var(--nm-surface);
+$bg-card-hover: var(--nm-surface-2);
+$bg-elevated: var(--nm-surface);
+$bg-glass: var(--nm-surface);
+$bg-glass-heavy: var(--nm-surface);
+$bg-glass-subtle: var(--nm-surface-2);
+
+/* --- 反白区块（Hero / CTA 等深色区域）--- */
+$space-950: var(--nm-invert-bg);
+$space-900: var(--nm-invert-bg);
+$space-800: var(--nm-invert-bg-2);
+$space-glass: var(--nm-invert-bg);
+$space-border: var(--nm-invert-line);
+
+/* --- 文字阶梯 --- */
+$text-primary: var(--nm-ink);
+$text-secondary: var(--nm-ink-2);
+$text-muted: var(--nm-ink-3);
+$text-dim: var(--nm-ink-4);
+$text-inverse: var(--nm-invert-fg);
+
+/* --- 边框 --- */
+$border: var(--nm-line);
+$border-light: var(--nm-line-strong);
+$border-subtle: var(--nm-line);
+$border-glass: var(--nm-line);
+
+/* --- 圆角 --- */
+$radius-xs: var(--nm-r-xs);
+$radius-sm: var(--nm-r-sm);
+$radius-md: var(--nm-r);
+$radius-lg: var(--nm-r-lg);
+$radius-xl: var(--nm-r-xl);
+$radius-2xl: var(--nm-r-2xl);
+$radius-full: var(--nm-r-full);
+
+/* --- 阴影 --- */
+$shadow-xs: var(--nm-sh-1);
+$shadow-sm: var(--nm-sh-1);
+$shadow-md: var(--nm-sh-2);
+$shadow-lg: var(--nm-sh-3);
+$shadow-xl: var(--nm-sh-4);
+$shadow-glow: var(--nm-sh-accent);
+$shadow-glow-secondary: var(--nm-sh-accent);
+$shadow-inner: inset 0 1px 2px rgba(15, 19, 25, 0.06);
+
+/* --- 动效 --- */
+$ease-out: var(--nm-ease);
+$ease-spring: var(--nm-ease-spring);
+$ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+$transition-fast: var(--nm-dur-fast) var(--nm-ease);
+$transition-normal: var(--nm-dur) var(--nm-ease);
+$transition-slow: var(--nm-dur-slow) var(--nm-ease);
+$transition-spring: var(--nm-dur) var(--nm-ease-spring);
+
+/* --- 毛玻璃：新方向以实心纸卡为准，统一关闭 --- */
+$blur-sm: none;
+$blur-md: none;
+$blur-lg: none;

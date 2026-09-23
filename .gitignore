@@ -1,0 +1,46 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+target
+*.class
+
+*.log
+.settings
+.project
+logs
+job
+
+templates
+
+# ==== 开源合规与仓库卫生（本地环境与构建产物不入库）====
+# 环境变量（含真实口令，本地 docker compose 使用）
+.env
+.env.local
+.env.*.local
+
+# 前端依赖与构建产物
+node_modules/
+**/node_modules/
+dist/
+
+# Maven 构建产物
+**/target/
+
+# Docker 本地数据卷（bind mounts，运行时产物，体积大）
+docker/mysql/data/
+docker/redis/data/
+docker/minio/data/
+docker/es/data/
+docker/es/plugins/
+
+# 日志
+*.log
+logs/
+# GitHub Actions workflows (requires workflow scope on PAT)
+.github/workflows/

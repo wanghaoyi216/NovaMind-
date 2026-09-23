@@ -1,0 +1,41 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/${tj.jdbc.database}?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: novamind321bca
+    # ====== P0 改造：HikariCP 统一连接池配置 ======
+    # 17 个微服务共用一个 MySQL，必须限制每个服务的连接数，避免打挂数据库
+    # 业务方在自己的 application.yml 里也可以再覆盖
+    hikari:
+      maximum-pool-size: 20          # 默认 10 太低；改为 20 后，17 服务 * 20 = 340，仍在 MySQL max_connections=500 以内留余量
+      minimum-idle: 5                # 预热 5 个连接，减少冷启动延迟
+      connection-timeout: 30000      # 30s 拿不到连接抛 SQLTimeoutException
+      idle-timeout: 600000           # 10 分钟没用的连接驱逐
+      max-lifetime: 1800000          # 30 分钟强制回收，避免 MySQL wait_timeout 主动断开
+      leak-detection-threshold: 60000 # 60s 没关连接 → 打 WARN 日志，提示连接泄漏
+      pool-name: HikariPool-Novamind   # 统一前缀，监控/日志好识别
+      auto-commit: true
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: assign_id
+
+# P0 改造：自定义开关（关掉意味着走 Spring Boot 默认 DataSourceAutoConfiguration）
+novamind:
+  datasource:
+    custom-hikari: true   # 关闭可设 false，恢复 Spring Boot 默认行为
+  idempotency:
+    enabled: true         # 总开关
+    interceptor-enabled: true
+    annotation-enabled: true
+    header-name: Idempotency-Key
+    cache-key-prefix: "idempotency:"
+    expire-hours: 24
+    require-header: false  # 默认 false：没带 Idempotency-Key 头也放行（生产建议改 true）
+  rabbitmq:
+    outbox-enabled: true
+    outbox-retry-interval-ms: 30000
+

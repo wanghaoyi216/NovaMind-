@@ -1,0 +1,12 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-label="个人中心">
+  <defs>
+    <linearGradient id="nm-profile" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67e8f9"/><stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <g stroke="url(#nm-profile)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="12" cy="8.3" r="3.5"/>
+    <path d="M4.9 19.6 C4.9 16.1 8 14.1 12 14.1 C16 14.1 19.1 16.1 19.1 19.6"/>
+  </g>
+  <path fill="#9be7ff" opacity="0.9" d="M18.9 3 C19 3.85 19.35 4.2 20.2 4.3 C19.35 4.4 19 4.75 18.9 5.6 C18.8 4.75 18.45 4.4 17.6 4.3 C18.45 4.2 18.8 3.85 18.9 3 Z"/>
+</svg>

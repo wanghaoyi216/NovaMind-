@@ -1,0 +1,37 @@
+# R12 - Nacos 配置中心引导文件
+# Spring Cloud Alibaba Nacos Config 必须在 bootstrap 阶段加载，
+# 因此网关单独使用 bootstrap.yml（其它业务服务沿用 application-local.yml 中的 spring.config.import 入口）。
+spring:
+  application:
+    name: gateway-service
+  profiles:
+    active: local
+  cloud:
+    nacos:
+      # 注册中心地址（与 application-local.yml 中保持一致）
+      server-addr: localhost:8848
+      username: nacos
+      password: nacos
+      discovery:
+        group: DEFAULT_GROUP
+        # 网关一般不开 namespace：让 dev/staging/prod 通过 server-addr + group 隔离
+      config:
+        # 命名空间：留空走 public；上线后填 prod 的 namespaceId（生产应使用 namespace 物理隔离）
+        # namespace: 5e8b8c92-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+        # 必须显式指定 file-extension，否则默认是 properties
+        file-extension: yaml
+        group: DEFAULT_GROUP
+        refresh-enabled: true  # 开启 @RefreshScope 推送
+        # 多个 dataId 用 spring.config.import 显式声明，避免被旧版 spring.cloud.nacos.config.ext[0..n] 隐式规则干扰
+  config:
+    import:
+      - nacos:${spring.application.name}.yaml
+      - nacos:shared-spring.yaml
+      - nacos:shared-redis.yaml
+      - nacos:shared-logs.yaml
+      - nacos:shared-mybatis.yaml
+
+logging:
+  level:
+    com.novamind: debug
+    com.alibaba.cloud.nacos: info

@@ -1,0 +1,10 @@
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" role="img" aria-label="深浅色切换">
+  <defs>
+    <linearGradient id="nm-theme" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#67e8f9"/><stop offset="1" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+  <path stroke="url(#nm-theme)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"
+    d="M12.6 4.2 A7.6 7.6 0 1 0 19.8 11.4 A8.6 8.6 0 0 1 12.6 4.2 Z"/>
+  <path fill="url(#nm-theme)" d="M17.3 2.6 C17.5 4.2 18.1 4.8 19.7 5 C18.1 5.2 17.5 5.8 17.3 7.4 C17.1 5.8 16.5 5.2 14.9 5 C16.5 4.8 17.1 4.2 17.3 2.6 Z"/>
+</svg>
