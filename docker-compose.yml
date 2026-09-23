@@ -220,18 +220,16 @@ services:
       - "80:80"
     volumes:
       - ./docker/nginx/conf/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./docker/tj-portal:/usr/share/nginx/html/tj-portal:ro
-      - ./docker/tj-admin:/usr/share/nginx/html/tj-admin:ro
     restart: unless-stopped
     networks:
       novamind-network:
         aliases:
           - novamind-nginx
 
-  # ---- 新版前端（novamind-portal 源码构建，替代旧版 dist） ----
-  # 默认 `docker compose up` 不启动本服务（位于 portal profile 下，行为完全不变，
-  # 80 端口的 nginx 仍服务 docker/tj-portal、docker/tj-admin 旧版遗留 dist）。
+  # ---- 前端（novamind-portal 源码构建） ----
+  # 默认 `docker compose up` 不启动本服务（位于 portal profile 下）。
   # 启用新版：docker compose --profile portal up -d --build portal，访问 :8080。
+  # 注：nginx 服务现仅作为反向代理使用，旧版 dist 资产已迁移至 novamind-portal 服务。
   portal:
     build:
       context: ./novamind-portal

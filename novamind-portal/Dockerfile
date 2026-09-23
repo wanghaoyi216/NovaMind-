@@ -9,7 +9,7 @@
 #
 # 使用：在仓库根目录执行
 #   docker compose --profile portal up -d --build portal
-# 或单独构建：docker build -t tjxt-portal:local ./novamind-portal
+# 或单独构建：docker build -t novamind-portal:local ./novamind-portal
 # =====================================================================
 
 ########################## 阶段 1：构建产物 ##########################

@@ -9,7 +9,7 @@ import { AssetManifest, AssetEntry, AssetType } from '../types/assets'
 /**
  * Asset manifest definition
  * Requirement 8.10: Define assetManifest with backgrounds, logos, videos, icons
- * Requirement 15.1: Map assets from docker/tj-admin/assets directory
+ * Requirement 15.1: Map assets for preloading
  * Requirement 15.2: Identify critical assets for preloading
  */
 export const assetManifest: AssetManifest = {

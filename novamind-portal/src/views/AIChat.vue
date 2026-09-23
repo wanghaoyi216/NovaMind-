@@ -710,7 +710,7 @@ async function sendMessage() {
     }
   } catch {
     assistantMessage.content =
-      'NovaMind 暂时没有从 AI 服务收到完整响应。请确认网关和 `tj-aigc` 服务已经启动，然后再重试。'
+      'NovaMind 暂时没有从 AI 服务收到完整响应。请确认网关和 `novamind-aigc` 服务已经启动，然后再重试。'
     ElMessage.error('AI 对话暂时不可用')
   } finally {
     loading.value = false

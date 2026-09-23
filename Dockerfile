@@ -110,7 +110,7 @@ FROM eclipse-temurin:21-jre-alpine AS runtime
 # OCI 镜像元数据（CI/CD 扫描、仓库检索）
 LABEL org.opencontainers.image.title="novamind microservice" \
       org.opencontainers.image.description="Distroless-style Spring Boot service for novamind-learning platform" \
-      org.opencontainers.image.source="https://github.com/x/tjxt-javaai02" \
+      org.opencontainers.image.source="https://github.com/wanghaoyi216/NovaMind-" \
       org.opencontainers.image.licenses="Proprietary" \
       org.opencontainers.image.vendor="研究院研发组" \
       maintainer="研究院研发组 <research-maint@itcast.cn>"

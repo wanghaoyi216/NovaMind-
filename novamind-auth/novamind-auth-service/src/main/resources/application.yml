@@ -9,8 +9,8 @@ spring:
     name: auth-service
 encrypt:
   key-store:
-    # 别名必须与 novamind.jks 内实际条目一致：该库是 PKCS12，唯一别名是 tjxt
-    # （项目由天机学堂 tjxt 二次开发而来，改名时漏改了这里）。
+    # 别名必须与 novamind.jks 内实际条目一致：该库是 PKCS12，唯一别名是 tjxt (历史遗留证书别名)
+    # 注: 此别名继承自历史证书库，新生成证书时请同步更新别名
     # 写成 novamind 时 getKeyPair() 会静默返回 publicKey=null 的 KeyPair，
     # 导致 /jwks 抛 NPE、网关验签全部失败、所有需登录接口返回 401。
     alias: tjxt  #别名

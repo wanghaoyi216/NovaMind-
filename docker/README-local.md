@@ -32,7 +32,7 @@ The generated schema in `docker/mysql/init/01-novamind-schema.sql` is a permissi
 
 ## 新版前端容器化部署（novamind-portal）
 
-`docker/tj-portal`、`docker/tj-admin` 下是旧版前端的遗留构建产物（品牌为「知行 AI 学堂」，已过时），目前仍由 compose 的 `nginx` 服务（80 端口）提供，仅为兼容默认行为而保留；新版前端源码位于 `novamind-portal/`（Vue 3.5 + Vite 6 + TypeScript），可通过 `portal` 服务容器化运行，并将最终替代旧版 dist。
+新版前端源码位于 `novamind-portal/`（Vue 3.5 + Vite 6 + TypeScript），可通过 `portal` 服务容器化运行。
 
 `portal` 服务位于 `profiles: ["portal"]` 下，默认不启动，因此 `docker compose up` 的行为与从前完全一致。启用新版前端：
 
